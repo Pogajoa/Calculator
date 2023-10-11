@@ -3,7 +3,8 @@ PyQt를 이용한 계산기 만들기.
 
 
 ## 계산기 디자인
-![Calculator_design](https://github.com/Pogajoa/Calculator/assets/87626122/f04f739e-028f-4954-9c89-7e003fe26ef0)
+![image](https://github.com/Pogajoa/Calculator/assets/87626122/9ce05c09-a9e9-4fc2-904a-8a0d00ac7ce7)
+
 
 
 ## 계산기 기능
