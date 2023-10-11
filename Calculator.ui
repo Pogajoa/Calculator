@@ -17,8 +17,8 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>100</y>
+      <x>180</x>
+      <y>110</y>
       <width>381</width>
       <height>461</height>
      </rect>
@@ -52,7 +52,7 @@
       <string>𝛑</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_remain">
+    <widget class="QPushButton" name="pushButton_percent">
      <property name="geometry">
       <rect>
        <x>160</x>

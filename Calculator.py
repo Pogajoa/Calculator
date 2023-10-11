@@ -28,12 +28,14 @@ class WindowClass(QMainWindow, from_class):
         self.pushButton_clear.clicked.connect(self.clear)
         self.pushButton_mod.clicked.connect(self.mod_button_Clicked)
         self.pushButton_root.clicked.connect(self.button_Clicked)
+        self.pushButton_square.clicked.connect(self.square_button_Clicked)
+        self.pushButton_percent.clicked.connect(self.button_Clicked)
 
     def button_Clicked(self):
         sender = self.sender()
         new_text = sender.text()
         current_text = self.lineEdit.text()
-        if new_text in ('+', '-', '×', '÷', 'mod'):
+        if new_text in ('+', '-', '×', '÷', 'mod', '%'):
             self.flag = False       
             self.lineEdit.setText(current_text + new_text)
         elif self.lineEdit.text() == 'Malformed expression':
@@ -46,10 +48,15 @@ class WindowClass(QMainWindow, from_class):
 
     def mod_button_Clicked(self):
         sender = self.sender()
-        current_text = self.lineEdit.text()
         new_text = sender.text()
+        current_text = self.lineEdit.text()
         self.lineEdit.setText(current_text + ' ' + new_text + ' ')
         self.flag = False
+    
+    def square_button_Clicked(self):
+        current_text = self.lineEdit.text()
+        new_text = current_text + '²'
+        self.lineEdit.setText(new_text)  
     
     def calculation(self):
         text = self.lineEdit.text()
@@ -58,22 +65,43 @@ class WindowClass(QMainWindow, from_class):
             self.lineEdit.setText(text)
             self.flag = True
             return 0
-        # elif text.endswith('𝛑'):
-        #     text = text[:-1] + '×3.141592654'
             
-        if text[-1] in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '𝛑'):
+        if text[-1] not in ('.', '+', '-', '×', '÷', ' mod ', '√'):
             cal_line = self.lineEdit.text()
-            cal_line = cal_line.replace('𝛑', '×3.141592654')
-            tokens = re.findall(r'\d+\.\d+|\d+|\+|-|×|÷| mod |√\d+|\√\d+\.\d+', cal_line)
+            cal_line = cal_line.replace('%','×0.01')
+            if '𝛑' in cal_line:
+                    cal_line = cal_line.replace('𝛑', '×3.141592654')
+            # cal_line = cal_line.replace('𝛑', '×3.141592654')
+            operators = ['+','-','×','÷',' mod ']  # 나눌 연산자들
+            tokens = [cal_line]
+            for operator in operators:
+                    new_tokens = []
+                    for token in tokens:
+                        splitted_tokens = token.split(operator)
+                        for i, t in enumerate(splitted_tokens):
+                            # 연산자와 숫자를 번갈아가면서 추가
+                            if i != 0:
+                                new_tokens.append(operator)
+                            new_tokens.append(t)
+                    tokens = new_tokens
+                    
             for i in range(len(tokens)):
                 if tokens[i][0] == '√':
+                    if tokens[i][-1] == '²':
+                        tokens[i] = '√' + str(float(tokens[i][1:-1])**2)
+                    
                     sqrt_result = math.sqrt(float(tokens[i][1:]))
                     tokens[i] = '{:.9g}'.format(sqrt_result)
-                                        
+                elif tokens[i][-1] == '²':
+                    square_result = float(tokens[i][:-1])**2
+                    tokens[i] = '{:.9g}'.format(square_result)
+            
+            
+            
+                            
             # 숫자와 연산자를 각각의 리스트에 분리
             numbers = [Decimal(token) for token in tokens if token not in ('+', '-', '×', '÷', ' mod ')] 
             operators = [token for token in tokens if token in ['+', '-', '×', '÷', ' mod ']]
-            
             # 설정된 정밀도 변경
             precision = 10  # 정밀도를 필요에 따라 조정
             getcontext().prec = precision
