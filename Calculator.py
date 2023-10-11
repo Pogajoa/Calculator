@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from decimal import Decimal, getcontext
 import re
+import math
 
 from_class = uic.loadUiType("Calculator.ui")[0]
 class WindowClass(QMainWindow, from_class):
@@ -26,6 +27,7 @@ class WindowClass(QMainWindow, from_class):
         self.pushButton_pi.clicked.connect(self.button_Clicked)
         self.pushButton_clear.clicked.connect(self.clear)
         self.pushButton_mod.clicked.connect(self.mod_button_Clicked)
+        self.pushButton_root.clicked.connect(self.button_Clicked)
 
     def button_Clicked(self):
         sender = self.sender()
@@ -48,7 +50,7 @@ class WindowClass(QMainWindow, from_class):
         new_text = sender.text()
         self.lineEdit.setText(current_text + ' ' + new_text + ' ')
         self.flag = False
-
+    
     def calculation(self):
         text = self.lineEdit.text()
         if text == '𝛑':
@@ -56,12 +58,18 @@ class WindowClass(QMainWindow, from_class):
             self.lineEdit.setText(text)
             self.flag = True
             return 0
-        elif text.endswith('𝛑'):
-            text = text[:-1] + '×3.141592654'
+        # elif text.endswith('𝛑'):
+        #     text = text[:-1] + '×3.141592654'
             
-        if text[-1] in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'):
+        if text[-1] in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '𝛑'):
             cal_line = self.lineEdit.text()
-            tokens = re.findall(r'\d+\.\d+|\d+|\+|-|×|÷| mod ', cal_line)
+            cal_line = cal_line.replace('𝛑', '×3.141592654')
+            tokens = re.findall(r'\d+\.\d+|\d+|\+|-|×|÷| mod |√\d+|\√\d+\.\d+', cal_line)
+            for i in range(len(tokens)):
+                if tokens[i][0] == '√':
+                    sqrt_result = math.sqrt(float(tokens[i][1:]))
+                    tokens[i] = '{:.9g}'.format(sqrt_result)
+                                        
             # 숫자와 연산자를 각각의 리스트에 분리
             numbers = [Decimal(token) for token in tokens if token not in ('+', '-', '×', '÷', ' mod ')] 
             operators = [token for token in tokens if token in ['+', '-', '×', '÷', ' mod ']]
